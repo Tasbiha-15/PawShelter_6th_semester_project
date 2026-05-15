@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "691292374218",
+    "project_id": "pawshelter-6th-semester",
+    "storage_bucket": "pawshelter-6th-semester.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:691292374218:android:3e19c50d866ab5ec3d2033",
+        "android_client_info": {
+          "package_name": "com.example.glitched"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgVOmJ9_JrzNv-eU9IEaaDloLqcHtstAg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
