@@ -4,22 +4,39 @@ import '../../model/cat_model.dart';
 import '../../model/dog_model.dart';
 
 class PetDetailController extends GetxController {
-
   final FirestoreService _firestoreService = FirestoreService();
 
   // Dynamic variable to hold either Cat or Dog model
   late final dynamic pet;
   late final bool isCat;
 
-  // Rx Variables for UI
+  
+// PetDetailController mein ye add karein
+  RxBool isFavorite = false.obs;
   RxBool isLoading = false.obs;
+  
 
   @override
   void onInit() {
     super.onInit();
-    // We expect arguments passed; like: Get.toNamed(route, arguments: [petObj, isCatBool])
     pet = Get.arguments[0];
     isCat = Get.arguments[1];
+    checkIfFavorite(); // Initial check
+  }
+
+  Future<void> checkIfFavorite() async {
+    isFavorite.value = await _firestoreService.isPetInFavorites(id);
+  }
+
+// Favorite toggle karne ka function
+  Future<void> toggleFavorite() async {
+    if (isFavorite.value) {
+      await _firestoreService.deleteFavoritePet(id);
+      isFavorite.value = false;
+    } else {
+      await saveToFavorites(); // Purana function
+      isFavorite.value = true;
+    }
   }
 
   // --- Getters to Normalize Data (So UI is clean) ---
@@ -63,7 +80,8 @@ class PetDetailController extends GetxController {
   String get description {
     if (isCat) {
       return (pet as CatModel).breeds?.isNotEmpty == true
-          ? (pet as CatModel).breeds![0].description ?? "No description available."
+          ? (pet as CatModel).breeds![0].description ??
+              "No description available."
           : "A lovely cat looking for a home.";
     } else {
       // Dogs usually have temperament, we use that as description

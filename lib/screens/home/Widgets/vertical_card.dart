@@ -22,13 +22,21 @@ class VerticalPetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // --- Dynamic Color Logic ---
+    Color getStatusColor() {
+      if (shelterName.contains("ACCEPTED")) return Colors.green;
+      if (shelterName.contains("REJECTED")) return Colors.red;
+      if (shelterName.contains("PENDING")) return Colors.orange;
+      return AppColors.DarkPink; // Default for Favorites/Saved Pets
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Container(
           height: 120,
-          margin: const EdgeInsets.only(bottom: 10), // Added bottom margin for spacing
+          margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
@@ -57,7 +65,7 @@ class VerticalPetCard extends StatelessWidget {
                     imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.error, color: Colors.grey),
+                        const Icon(Icons.error, color: Colors.grey),
                   ),
                 ),
               ),
@@ -109,10 +117,14 @@ class VerticalPetCard extends StatelessWidget {
 
                       const Spacer(),
 
-                      // Shelter Info
+                      // Shelter Info / Status
                       Row(
                         children: [
-                          const Icon(Icons.location_on, size: 12, color: AppColors.DarkPink),
+                          Icon(
+                            shelterName.contains("STATUS") ? Icons.info_outline : Icons.location_on, 
+                            size: 12, 
+                            color: getStatusColor()
+                          ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
@@ -121,8 +133,8 @@ class VerticalPetCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.jost(
                                   fontSize: 12,
-                                  color: AppColors.DarkPink,
-                                  fontWeight: FontWeight.w500
+                                  color: getStatusColor(), // Ab ye dynamic color use karega
+                                  fontWeight: FontWeight.bold
                               ),
                             ),
                           ),

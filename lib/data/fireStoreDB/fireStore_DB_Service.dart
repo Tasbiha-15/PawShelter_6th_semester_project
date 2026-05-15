@@ -76,32 +76,33 @@ class FirestoreService {
 
   // --- 3. REQUESTS LOGIC (UPDATED) ---
   Future<void> requestAdoption({
-    required String petId,
-    required String name,
-    required String imageUrl,
-    required String origin,
-    required bool isCat,
-  }) async {
-    try {
-      if (currentUserId.isEmpty) return;
-      final requestRef = _db.collection("requests").doc();
-      await requestRef.set({
-        "requestId": requestRef.id,
-        "uid": currentUserId,
-        "userEmail": currentUserEmail,
-        "petId": petId,
-        "petName": name,
-        "petImage": imageUrl,
-        "petOrigin": origin,
-        "isCat": isCat,
-        "status": "pending",
-        "timestamp": FieldValue.serverTimestamp(),
-      });
-      Utils.toastMessegessuccess("Request Sent to Shelter!");
-    } catch (e) {
-      Utils.toastMesseges("Error requesting: $e");
-    }
+  required String petId,
+  required String name,
+  required String imageUrl,
+  required String origin,
+  required bool isCat,
+}) async {
+  try {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    String requestId = DateTime.now().millisecondsSinceEpoch.toString();
+
+    await _db.collection("requests").doc(requestId).set({
+      'requestId': requestId,
+      'uid': uid,
+      'petId': petId,
+      'petName': name,
+      'petImage': imageUrl,
+      'petOrigin': origin,
+      'isCat': isCat,
+      'status': 'pending', // YEH LINE LAZMI HAI: Isi se user ko status nazar aayega
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+    
+    Utils.toastMessegessuccess("Adoption Request Sent!");
+  } catch (e) {
+    Utils.toastMesseges("Error: $e");
   }
+}
 
   // Stream for Specific User's Requests
   Stream<List<Map<String, dynamic>>> getUserRequestsStream() {
@@ -121,4 +122,16 @@ class FirestoreService {
       Utils.toastMesseges("Error cancelling: $e");
     }
   }
+
+
+  Future<bool> isPetInFavorites(String petId) async {
+  try {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    // Aapke database path ke mutabiq:
+    var doc = await _db.collection("users").doc(uid).collection("favorites").doc(petId).get();
+    return doc.exists;
+  } catch (e) {
+    return false;
+  }
+}
 }

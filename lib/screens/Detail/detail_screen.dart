@@ -6,8 +6,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../controller/detail/detail_screen_controller.dart';
 import '../../resources/colors/app_colors.dart';
 
-
-
 class PetDetailScreen extends StatelessWidget {
   const PetDetailScreen({super.key});
 
@@ -23,13 +21,11 @@ class PetDetailScreen extends StatelessWidget {
       backgroundColor: AppColors.LightPink,
       body: Stack(
         children: [
-
           // --- 1. HERO IMAGE ---
           ClipRRect(
             borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(50),
-                bottomRight: Radius.circular(50)
-            ),
+                bottomRight: Radius.circular(50)),
             child: SizedBox(
               height: height * 0.6,
               width: width,
@@ -46,14 +42,13 @@ class PetDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // --- 2. GRADIENT OVERLAY (For Text Readability) ---
+          // --- 2. GRADIENT OVERLAY ---
           Container(
             height: height * 0.6,
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(50),
-                  bottomRight: Radius.circular(50)
-              ),
+                  bottomRight: Radius.circular(50)),
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -70,17 +65,19 @@ class PetDetailScreen extends StatelessWidget {
           // --- 3. SCROLLABLE CONTENT ---
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(height: height * 0.45),
+            child: SizedBox(
+              width: width, // Pura width diya taake center align sahi ho
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center, // Horizontal Center
+                        children: [
+                          SizedBox(height: height * 0.45),
 
-                        // Name
-                        Text(
+                          // Name - Text Align Center
+                          Text(
                             controller.name,
                             textAlign: TextAlign.center,
                             style: GoogleFonts.oswald(
@@ -92,13 +89,13 @@ class PetDetailScreen extends StatelessWidget {
                                   Shadow(blurRadius: 10, color: Colors.white),
                                 ],
                               ),
-                            )
-                        ),
+                            ),
+                          ),
 
-                        const SizedBox(height: 5),
+                          const SizedBox(height: 5),
 
-                        // Origin | Age
-                        Text(
+                          // Origin | Age - Text Align Center
+                          Text(
                             "${controller.originOrGroup} | ${controller.lifeSpan} years",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.montserrat(
@@ -107,53 +104,58 @@ class PetDetailScreen extends StatelessWidget {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),
-                            )
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Temperament Chips
-                        Wrap(
-                          alignment: WrapAlignment.center,
-                          spacing: 8.0,
-                          children: controller.temperament.split(',').map((temp) {
-                            return Chip(
-                              label: Text(temp.trim()),
-                              backgroundColor: Colors.white,
-                              labelStyle: const TextStyle(color: AppColors.DarkPink),
-                              side: const BorderSide(color: AppColors.DarkPink),
-                            );
-                          }).toList(),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Description
-                        Container(
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
-                          child: Text(
-                              controller.description,
-                              textAlign: TextAlign.justify,
-                              style: GoogleFonts.montserrat(
-                                textStyle: const TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 14,
-                                  height: 1.5,
+
+                          const SizedBox(height: 20),
+
+                          // Temperament Chips
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 8.0,
+                            runSpacing: 8.0,
+                            children: controller.temperament.split(',').map((temp) {
+                              return Chip(
+                                label: Text(temp.trim()),
+                                backgroundColor: Colors.white,
+                                labelStyle: const TextStyle(color: AppColors.DarkPink),
+                                side: const BorderSide(color: AppColors.DarkPink),
+                              );
+                            }).toList(),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Description - Wrap in Align for safety
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                controller.description,
+                                textAlign: TextAlign.center, // UI ko clean rakhne ke liye center behtar hai
+                                style: GoogleFonts.montserrat(
+                                  textStyle: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 14,
+                                    height: 1.5,
+                                  ),
                                 ),
-                              )
+                              ),
+                            ),
                           ),
-                        ),
 
-                        const SizedBox(height: 120), // Space for bottom buttons
-                      ],
+                          const SizedBox(height: 120),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
@@ -163,43 +165,42 @@ class PetDetailScreen extends StatelessWidget {
             left: 20,
             right: 20,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
-                // 1. SAVE BUTTON (Rounded Bookmark)
+                // SAVE BUTTON
                 MySaveButton(
-                    height: 55,
-                    width: 55,
-                    ontap: () => controller.saveToFavorites()
+                  height: 55,
+                  width: 55,
+                  controller: controller,
+                  ontap: () => controller.toggleFavorite(), // Updated to Toggle
                 ),
 
                 const SizedBox(width: 15),
 
-                // 2. REQUEST BUTTON (Long Width - Like Sign In)
+                // REQUEST BUTTON
                 Expanded(
                   child: Obx(() => AdoptionRequestButton(
-                    text: controller.isLoading.value ? "Sending..." : "Request Adoption",
-                    isLoading: controller.isLoading.value,
-                    onTap: () {
-                      if (!controller.isLoading.value) {
-                        controller.requestAdoption();
-                      }
-                    },
-                  )),
+                        text: controller.isLoading.value ? "Sending..." : "Request Adoption",
+                        isLoading: controller.isLoading.value,
+                        onTap: () {
+                          if (!controller.isLoading.value) {
+                            controller.requestAdoption();
+                          }
+                        },
+                      )),
                 ),
               ],
             ),
           ),
 
-          // --- 5. BACK BUTTON (Top Left) ---
+          // --- 5. BACK BUTTON ---
           Positioned(
             top: 50,
             left: 20,
             child: InkWell(
-              onTap: ()=>Get.back(),
+              onTap: () => Get.back(),
               child: Container(
                 height: 40,
-                width:40,
+                width: 40,
                 decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.8),
                     shape: BoxShape.circle,
@@ -209,8 +210,7 @@ class PetDetailScreen extends StatelessWidget {
                         blurRadius: 10,
                         spreadRadius: 2,
                       )
-                    ]
-                ),
+                    ]),
                 child: const Center(
                   child: Icon(Icons.arrow_back, color: AppColors.DarkPink, size: 22),
                 ),
@@ -223,20 +223,19 @@ class PetDetailScreen extends StatelessWidget {
   }
 }
 
-// ==========================================
-//              CUSTOM WIDGETS
-// ==========================================
-
-// 1. Save Button (Rounded Square with Bookmark)
+// Custom Save Button Widget
 class MySaveButton extends StatelessWidget {
   final double height;
   final double width;
   final VoidCallback ontap;
+  final PetDetailController controller;
 
-  const MySaveButton({super.key,
+  const MySaveButton({
+    super.key,
     required this.height,
     required this.width,
-    required this.ontap
+    required this.ontap,
+    required this.controller,
   });
 
   @override
@@ -248,7 +247,7 @@ class MySaveButton extends StatelessWidget {
         width: width,
         decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20), // Rounded corners
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -256,17 +255,20 @@ class MySaveButton extends StatelessWidget {
                 spreadRadius: 2,
                 offset: const Offset(0, 4),
               ),
-            ]
-        ),
-        child: const Center(
-          child: Icon(Icons.bookmark_border, color: AppColors.DarkPink, size: 28),
-        ),
+            ]),
+        child: Obx(() => Center(
+              child: Icon(
+                controller.isFavorite.value ? Icons.favorite : Icons.favorite_border,
+                color: controller.isFavorite.value ? Colors.red : AppColors.DarkPink,
+                size: 28,
+              ),
+            )),
       ),
     );
   }
 }
 
-// 2. Adoption Request Button (Long Button from Auth Screen)
+// Adoption Request Button Widget
 class AdoptionRequestButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
@@ -284,10 +286,10 @@ class AdoptionRequestButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 55, // Standard height
+        height: 55,
         decoration: BoxDecoration(
           color: AppColors.DarkPink,
-          borderRadius: BorderRadius.circular(30), // Pill shape
+          borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -299,19 +301,19 @@ class AdoptionRequestButton extends StatelessWidget {
         child: Center(
           child: isLoading
               ? const SpinKitThreeBounce(
-            color: Colors.white,
-            size: 20,
-          )
+                  color: Colors.white,
+                  size: 20,
+                )
               : Text(
-            text,
-            style: GoogleFonts.jost(
-              textStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+                  text,
+                  style: GoogleFonts.jost(
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
         ),
       ),
     );
