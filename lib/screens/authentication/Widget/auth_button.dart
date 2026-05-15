@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../resources/colors/app_colors.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthButton extends StatelessWidget {
   final String text;

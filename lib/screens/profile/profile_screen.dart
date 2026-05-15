@@ -129,12 +129,25 @@ class ProfileScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final item = currentList[index];
 
-                  // Handle different ID fields
+                  // Variables
                   final String deleteId = controller.isFavoritesTab.value ? item['petId'] : item['requestId'];
-                  final String displayStatus = controller.isFavoritesTab.value ? "Saved Pet" : "Status: ${(item['status'] ?? 'pending').toString().toUpperCase()}";
                   final String name = controller.isFavoritesTab.value ? item['name'] : item['petName'];
                   final String image = controller.isFavoritesTab.value ? item['image'] : item['petImage'];
                   final String origin = controller.isFavoritesTab.value ? item['origin'] : item['petOrigin'];
+                  
+                  // --- Status & Color Logic ---
+                  String status = (item['status'] ?? 'pending').toString().toLowerCase();
+                  String displayStatus = controller.isFavoritesTab.value 
+                      ? "Saved Pet" 
+                      : status.toUpperCase();
+
+                  // Color selection
+                  Color statusColor = AppColors.DarkPink; // Default
+                  if (!controller.isFavoritesTab.value) {
+                    if (status == 'accepted') statusColor = Colors.green;
+                    if (status == 'rejected') statusColor = Colors.red;
+                    if (status == 'pending') statusColor = Colors.orange;
+                  }
 
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 15),
@@ -153,8 +166,13 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                       child: VerticalPetCard(
-                        imageUrl: image ?? "", name: name ?? "Unknown", info: origin ?? "Unknown",
-                        shelterName: displayStatus, isCat: item['isCat'] ?? true, onTap: () {},
+                        imageUrl: image ?? "", 
+                        name: name ?? "Unknown", 
+                        info: origin ?? "Unknown",
+                        // Hum status ko bracket mein dikhayenge ya direct
+                        shelterName: controller.isFavoritesTab.value ? displayStatus : "STATUS: $displayStatus", 
+                        isCat: item['isCat'] ?? true, 
+                        onTap: () {},
                       ),
                     ),
                   );

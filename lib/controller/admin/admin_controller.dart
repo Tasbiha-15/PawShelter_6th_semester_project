@@ -46,8 +46,6 @@ class AdminController extends GetxController {
   // 2. APPROVE REQUEST (Bulletproof Instant Update)
   Future<void> approveRequest(String requestId) async {
     // --- STEP 1: FORCE UI UPDATE (OPTIMISTIC) ---
-    // We create a temporary copy, remove the item, and assign it back.
-    // This GUARANTEES the Obx sees the change.
     var tempList = List<Map<String, dynamic>>.from(pendingRequests);
     tempList.removeWhere((req) => req['requestId'] == requestId);
     pendingRequests.assignAll(tempList);
@@ -63,7 +61,7 @@ class AdminController extends GetxController {
     }
   }
 
-  // 3. REJECT REQUEST (Bulletproof Instant Update)
+  // 3. REJECT REQUEST (Updated: Now updates status instead of deleting)
   Future<void> rejectRequest(String requestId) async {
     // --- STEP 1: FORCE UI UPDATE ---
     var tempList = List<Map<String, dynamic>>.from(pendingRequests);
@@ -71,8 +69,10 @@ class AdminController extends GetxController {
     pendingRequests.assignAll(tempList);
 
     try {
-      // --- STEP 2: UPDATE SERVER ---
-      await _db.collection("requests").doc(requestId).delete();
+      // --- STEP 2: UPDATE SERVER (Changed from .delete() to .update()) ---
+      await _db.collection("requests").doc(requestId).update({
+        "status": "rejected"
+      });
       Utils.toastMessegessuccess("Request Rejected");
     } catch (e) {
       Utils.toastMesseges("Error rejecting: $e");

@@ -8,7 +8,6 @@ import '../../resources/assets/image_assets.dart';
 import '../../resources/colors/app_colors.dart';
 import 'Widget/auth_button.dart';
 
-
 class SigninScreen extends StatelessWidget {
   const SigninScreen({super.key});
 
@@ -18,47 +17,57 @@ class SigninScreen extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: AppColors.LightPink, // Your Light Pink BG
+      backgroundColor: AppColors.LightPink,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 28),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Align text to left
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: height * 0.07),
+
               // 1. Logo Centered at Top
               Center(
                 child: Container(
-                  height: 120,
-                  width: 120,
-                  decoration: const BoxDecoration(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    image: DecorationImage(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.DarkPink.withOpacity(0.18),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                    image: const DecorationImage(
                       image: AssetImage(ImageAssets.logo),
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: height * 0.05),
+              SizedBox(height: height * 0.045),
 
               // 2. Bold Text Left Aligned
               Text(
                 "Login",
                 style: GoogleFonts.jost(
-                  fontSize: 32,
+                  fontSize: 34,
                   fontWeight: FontWeight.bold,
                   color: AppColors.DarkPink,
                 ),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 4),
               Text(
                 "Please sign in to continue",
                 style: GoogleFonts.jost(
-                  fontSize: 16,
+                  fontSize: 15,
                   color: AppColors.MyGray,
                 ),
               ),
-              SizedBox(height: height * 0.04),
+              SizedBox(height: height * 0.035),
 
               // 3. Text Fields
               _buildTextField(
@@ -66,7 +75,7 @@ class SigninScreen extends StatelessWidget {
                 hint: "Email",
                 icon: Icons.email_outlined,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               _buildTextField(
                 controller: controller.passwordController,
                 hint: "Password",
@@ -74,30 +83,102 @@ class SigninScreen extends StatelessWidget {
                 isPassword: true,
               ),
 
-              SizedBox(height: height * 0.05),
+              SizedBox(height: height * 0.035),
 
-              // 4. Auth Button
+              // 4. Auth Button (Email Login)
               Obx(() => AuthButton(
-                text: "Login",
-                isLoading: controller.isLoading.value,
-                onTap: () => controller.login(),
-              )),
+                    text: "Login",
+                    isLoading: controller.isLoading.value,
+                    onTap: () => controller.login(),
+                  )),
+
+              SizedBox(height: height * 0.025),
+
+              // Divider with OR
+              Row(
+                children: [
+                  Expanded(
+                    child: Divider(
+                      color: AppColors.MyGray.withOpacity(0.35),
+                      thickness: 1,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      "OR",
+                      style: GoogleFonts.jost(
+                        color: AppColors.MyGray,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Divider(
+                      color: AppColors.MyGray.withOpacity(0.35),
+                      thickness: 1,
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: height * 0.025),
+
+              // Google Sign-In Button
+              GestureDetector(
+                onTap: () => controller.signInWithGoogle(),
+                child: Container(
+                  height: 55,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.g_mobiledata, size: 40, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Sign in with Google",
+                        style: GoogleFonts.jost(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: height * 0.04),
 
               // 5. Navigate to Signup
-              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account? "),
+                  Text(
+                    "Don't have an account? ",
+                    style: GoogleFonts.jost(color: AppColors.MyGray),
+                  ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       controller.emailController.clear();
                       controller.passwordController.clear();
                       Get.to(() => const SignUpScreen());
                     },
-                    child: const Text(
+                    child: Text(
                       "Sign Up",
-                      style: TextStyle(
+                      style: GoogleFonts.jost(
                         fontWeight: FontWeight.bold,
                         color: AppColors.DarkPink,
                       ),
@@ -105,6 +186,7 @@ class SigninScreen extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: height * 0.03),
             ],
           ),
         ),
@@ -112,7 +194,6 @@ class SigninScreen extends StatelessWidget {
     );
   }
 
-  // Helper Widget for neat TextFields
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
@@ -138,7 +219,7 @@ class SigninScreen extends StatelessWidget {
           hintText: hint,
           prefixIcon: Icon(icon, color: AppColors.TfColor),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           hintStyle: TextStyle(color: AppColors.TfColor),
         ),
       ),
