@@ -81,11 +81,17 @@ class SignUpScreen extends StatelessWidget {
                 icon: Icons.email_outlined,
               ),
               const SizedBox(height: 14),
+              
+              // Password field updated with left lock toggle logic
               _buildTextField(
                 controller: controller.passwordController,
                 hint: "Password",
                 icon: Icons.lock_outline,
                 isPassword: true,
+                obscureText: controller.isPasswordHidden,
+                onSuffixIconPressed: () {
+                  controller.isPasswordHidden.value = !controller.isPasswordHidden.value;
+                },
               ),
 
               SizedBox(height: height * 0.035),
@@ -132,39 +138,44 @@ class SignUpScreen extends StatelessWidget {
 
               // Google Sign-Up Button
               GestureDetector(
-                onTap: () => controller.signInWithGoogle(),
-                child: Container(
-                  height: 55,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.g_mobiledata, size: 40, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Text(
-                        "Sign up with Google",
-                        style: GoogleFonts.jost(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
+  onTap: () => controller.signInWithGoogle(),
+  child: Container(
+    height: 55,
+    width: double.infinity,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(30),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.06),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // 📷 Your Local Google Logo Asset
+        Image.asset(
+          'assets/images/google_logo.png', // 🔥 Aapki file ka exact naam aur path
+          height: 24,
+          width: 24,
+          fit: BoxFit.contain,
+        ),
+        const SizedBox(width: 12), 
+        Text(
+          "Sign in with Google",
+          style: GoogleFonts.jost(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: Colors.black87,
+          ),
+        ),
+      ],
+    ),
+  ),
+),
               SizedBox(height: height * 0.04),
 
               // 5. Navigate to Login
@@ -199,11 +210,14 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
+  // Updated to handle both normal inputs and left lock toggle seamlessly
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
     bool isPassword = false,
+    RxBool? obscureText, 
+    VoidCallback? onSuffixIconPressed,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -217,17 +231,35 @@ class SignUpScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: TextField(
-        controller: controller,
-        obscureText: isPassword,
-        decoration: InputDecoration(
-          hintText: hint,
-          prefixIcon: Icon(icon, color: AppColors.TfColor),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          hintStyle: TextStyle(color: AppColors.TfColor),
-        ),
-      ),
+      child: isPassword && obscureText != null
+          ? Obx(() => TextField(
+                controller: controller,
+                obscureText: obscureText.value,
+                decoration: InputDecoration(
+                  hintText: hint,
+                  prefixIcon: IconButton(
+                    icon: Icon(
+                      obscureText.value ? Icons.lock_outline : Icons.lock_open,
+                      color: AppColors.TfColor,
+                    ),
+                    onPressed: onSuffixIconPressed,
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  hintStyle: TextStyle(color: AppColors.TfColor),
+                ),
+              ))
+          : TextField(
+              controller: controller,
+              obscureText: false,
+              decoration: InputDecoration(
+                hintText: hint,
+                prefixIcon: Icon(icon, color: AppColors.TfColor),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                hintStyle: TextStyle(color: AppColors.TfColor),
+              ),
+            ),
     );
   }
 }

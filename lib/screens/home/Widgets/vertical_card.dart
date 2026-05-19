@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../resources/colors/app_colors.dart';
+// Hamari helper file ka import
+import '../../../pet_image_helper.dart'; 
 
 class VerticalPetCard extends StatelessWidget {
   final String imageUrl;
@@ -51,22 +53,16 @@ class VerticalPetCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // LEFT: Image
+              // LEFT: Image (Humne helper function se replace kar diya)
               ClipRRect(
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(15),
                   bottomLeft: Radius.circular(15),
                 ),
-                child: Container(
+                child: SizedBox(
                   width: 120,
                   height: 120,
-                  color: Colors.grey[200],
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.error, color: Colors.grey),
-                  ),
+                  child: buildPetImage(imageUrl, size: 120),
                 ),
               ),
 
@@ -133,7 +129,7 @@ class VerticalPetCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.jost(
                                   fontSize: 12,
-                                  color: getStatusColor(), // Ab ye dynamic color use karega
+                                  color: getStatusColor(), 
                                   fontWeight: FontWeight.bold
                               ),
                             ),

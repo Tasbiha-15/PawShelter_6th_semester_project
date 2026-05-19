@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:get/get.dart';
 
 import '../../services/splash_services.dart';
+import '../../screens/authentication/signIn_Screen.dart';
+import '../../screens/onBoarding/intro_Screen.dart';
 
 
 class SplashController extends GetxController
@@ -12,15 +14,13 @@ class SplashController extends GetxController
 
 
 
-  @override
+ @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
-   splashService.isLogin();
-
+    
+    // Purani service ko bypass karke direct perfect 3-second ka timer lagaya hai
+    Timer(const Duration(seconds: 3), () {
+      Get.offAll(() => IntroScreen()); // Aapki Onboarding/Intro screen par bhej dega
+    });
   }
-
-
-
-
 }

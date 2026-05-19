@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../Utiles/utiles.dart';
 import '../../screens/authentication/signIn_Screen.dart';
+import 'package:flutter/material.dart';
 
 class AdminController extends GetxController {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -84,4 +85,28 @@ class AdminController extends GetxController {
     await _auth.signOut();
     Get.offAll(() => const SigninScreen());
   }
+
+  // Admin side collection approval logic
+Future<void> approvePetRequest(String docId, Map<String, dynamic> requestData) async {
+  try {
+    // 1. Data ka status update kr k active kr dein
+    requestData['status'] = 'approved';
+    
+    // 2. Main live 'pets' collection m data copy krwa dein
+    await FirebaseFirestore.instance.collection('pets').add(requestData);
+    
+    // 3. 'pet_requests' collection sy request delete kr dein
+    await FirebaseFirestore.instance.collection('pet_requests').doc(docId).delete();
+    
+    Get.snackbar("Approved", "Pet is now live on the app!", backgroundColor: Colors.green, colorText: Colors.white);
+  } catch (e) {
+    Get.snackbar("Error", "Approval failed: $e", backgroundColor: Colors.red, colorText: Colors.white);
+  }
+}
+
+Future<void> rejectPetRequest(String docId) async {
+  // Agar reject krna ho tou simple request delete kr dein ya status 'rejected' kr dein
+  await FirebaseFirestore.instance.collection('pet_requests').doc(docId).delete();
+  Get.snackbar("Rejected", "Request removed.", backgroundColor: Colors.orange, colorText: Colors.white);
+}
 }

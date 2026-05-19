@@ -25,9 +25,12 @@ class AuthController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController(); 
+  
 
   // --- State ---
   RxBool isLoading = false.obs;
+  var isPasswordHidden = true.obs; 
+  var isConfirmPasswordHidden = true.obs;
 
   // --- Services ---
   final FirebaseAuthService _authService = FirebaseAuthService();

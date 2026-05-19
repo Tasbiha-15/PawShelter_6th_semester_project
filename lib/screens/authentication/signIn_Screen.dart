@@ -76,11 +76,17 @@ class SigninScreen extends StatelessWidget {
                 icon: Icons.email_outlined,
               ),
               const SizedBox(height: 14),
+              
+              // Password field updated with GetX controller state
               _buildTextField(
                 controller: controller.passwordController,
                 hint: "Password",
                 icon: Icons.lock_outline,
                 isPassword: true,
+                obscureText: controller.isPasswordHidden, // Dynamic parameter
+                onSuffixIconPressed: () {
+                  controller.isPasswordHidden.value = !controller.isPasswordHidden.value;
+                },
               ),
 
               SizedBox(height: height * 0.035),
@@ -126,39 +132,45 @@ class SigninScreen extends StatelessWidget {
               SizedBox(height: height * 0.025),
 
               // Google Sign-In Button
-              GestureDetector(
-                onTap: () => controller.signInWithGoogle(),
-                child: Container(
-                  height: 55,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.g_mobiledata, size: 40, color: Colors.blue),
-                      const SizedBox(width: 8),
-                      Text(
-                        "Sign in with Google",
-                        style: GoogleFonts.jost(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            GestureDetector(
+  onTap: () => controller.signInWithGoogle(),
+  child: Container(
+    height: 55,
+    width: double.infinity,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(30),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.06),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // 📷 Your Local Google Logo Asset
+        Image.asset(
+          'assets/images/google_logo.png', // 🔥 Aapki file ka exact naam aur path
+          height: 24,
+          width: 24,
+          fit: BoxFit.contain,
+        ),
+        const SizedBox(width: 12), 
+        Text(
+          "Sign in with Google",
+          style: GoogleFonts.jost(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: Colors.black87,
+          ),
+        ),
+      ],
+    ),
+  ),
+),
 
               SizedBox(height: height * 0.04),
 
@@ -194,11 +206,15 @@ class SigninScreen extends StatelessWidget {
     );
   }
 
+  // Optimized custom function supporting GetX visibility tracking cleanly
+  // Ab saari functionality left side wale lock icon par hi shift kar di hai
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
     bool isPassword = false,
+    RxBool? obscureText, 
+    VoidCallback? onSuffixIconPressed, // Yeh click ab hum lock icon par use karenge
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -212,17 +228,37 @@ class SigninScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: TextField(
-        controller: controller,
-        obscureText: isPassword,
-        decoration: InputDecoration(
-          hintText: hint,
-          prefixIcon: Icon(icon, color: AppColors.TfColor),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          hintStyle: TextStyle(color: AppColors.TfColor),
-        ),
-      ),
+      child: isPassword && obscureText != null
+          ? Obx(() => TextField(
+                controller: controller,
+                obscureText: obscureText.value,
+                decoration: InputDecoration(
+                  hintText: hint,
+                  // Left side par lock ka icon click ho sakega aur status ke mutabik change hoga
+                  prefixIcon: IconButton(
+                    icon: Icon(
+                      obscureText.value ? Icons.lock_outline : Icons.lock_open,
+                      color: AppColors.TfColor,
+                    ),
+                    onPressed: onSuffixIconPressed, // Lock icon dabane se show/hide hoga
+                  ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  hintStyle: TextStyle(color: AppColors.TfColor),
+                  suffixIcon: null, // Right side wala eye icon bilkul khatam!
+                ),
+              ))
+          : TextField(
+              controller: controller,
+              obscureText: false,
+              decoration: InputDecoration(
+                hintText: hint,
+                prefixIcon: Icon(icon, color: AppColors.TfColor),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                hintStyle: TextStyle(color: AppColors.TfColor),
+              ),
+            ),
     );
   }
 }

@@ -3,11 +3,12 @@ import 'package:get/get.dart';
 import 'package:glitched/screens/category/widgets/bottom_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 import '../../controller/filter/filter_screen.dart';
 import '../../resources/colors/app_colors.dart';
 import '../Detail/detail_screen.dart';
 import '../home/Widgets/vertical_card.dart'; // Reuse your card!
+import '../../controller/home/home_controller.dart';
+
 
 
 class CategoryScreen extends StatelessWidget {
@@ -16,7 +17,17 @@ class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(CategoryController());
+    final homeController = Get.put(HomeViewModel()); 
+    
     final height = MediaQuery.of(context).size.height;
+
+    // Localized Cities List (Synced perfectly across App)
+    final List<String> pakCities = [
+      "Lahore (Gulberg Hub)",
+      "Karachi (Clifton Node)",
+      "Islamabad (G-11 Shelter)",
+      "Faisalabad (Samanabad Hub)"
+    ];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -123,25 +134,29 @@ class CategoryScreen extends StatelessWidget {
                     // Normalize Data
                     String name = "";
                     String image = "";
-                    String origin = "";
+                    String infoText = "";
 
                     if (controller.isCatTab.value) {
                       name = (pet.breeds != null && pet.breeds!.isNotEmpty) ? pet.breeds![0].name! : "Cat";
                       image = pet.url ?? "";
-                      origin = (pet.breeds != null && pet.breeds!.isNotEmpty) ? pet.breeds![0].origin! : "Unknown";
+                      infoText = "Local Rescue";
                     } else {
                       name = pet.name ?? "Dog";
                       image = pet.imageUrl;
-                      origin = pet.breedGroup ?? "Good Boy";
+                      infoText = pet.breedGroup ?? "Good Boy";
                     }
+
+                    // --- Hash Seed Logic for Location Sync ---
+                    final int petSeed = name.hashCode.abs();
+                    String synchronizedLocation = pakCities[petSeed % pakCities.length];
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 15),
                       child: VerticalPetCard(
                         imageUrl: image,
                         name: name,
-                        info: origin,
-                        shelterName: "Available for Adoption",
+                        info: infoText,
+                        shelterName: synchronizedLocation, // Ab yahan dynamic city ayegi
                         isCat: controller.isCatTab.value,
                         onTap: () {
                           // Navigate to Detail Screen

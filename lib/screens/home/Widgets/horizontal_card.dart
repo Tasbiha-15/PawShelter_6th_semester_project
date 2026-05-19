@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+// Hamari helper file ka import
+import '../../../pet_image_helper.dart';
 
 class HorizontalPetCard extends StatelessWidget {
   final String imageUrl;
@@ -23,18 +25,14 @@ class HorizontalPetCard extends StatelessWidget {
         color: Colors.transparent,
         child: Column(
           children: [
-            // Circular Image
+            // Circular Image (Yahan humne apna helper widget use kar liya)
+            // Card ke image section ke andar bas yeh call kar do:
             ClipOval(
-              child: Container(
-                height: 80,
-                width: 80,
-                color: Colors.grey[200],
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.pets, color: Colors.grey),
-                ),
+              child: SizedBox(
+                width: 70, // Jo bhi tumhaari UI ka size hai circular image ka
+                height: 70,
+                child: buildPetImage(imageUrl,
+                    size: 70), // Universal custom helper function call kiya
               ),
             ),
             const SizedBox(height: 5),
@@ -43,10 +41,8 @@ class HorizontalPetCard extends StatelessWidget {
               name,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.jost(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500
-              ),
+              style:
+                  GoogleFonts.jost(fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ],
         ),

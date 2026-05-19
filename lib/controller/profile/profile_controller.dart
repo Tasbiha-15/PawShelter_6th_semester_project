@@ -4,9 +4,11 @@ import 'package:glitched/screens/authentication/signIn_Screen.dart'; // Verify i
 
 import '../../data/fireStoreDB/fireStore_DB_Service.dart';
 import '../../data/responses/status.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // 🔥 Yeh lazmi add karo
+import 'package:flutter/material.dart'; // Center aur CircularProgressIndicator ke liye
+import '../../../resources/colors/app_colors.dart'; // Apni colors file ka sahi relative path check kar lena
 
 class UserProfileController extends GetxController {
-
   final FirestoreService _firestoreService = FirestoreService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -82,5 +84,48 @@ class UserProfileController extends GetxController {
   Future<void> signOut() async {
     await _auth.signOut();
     Get.offAll(() => const SigninScreen());
+  }
+
+  Future<void> sendContactDetails({
+    required String requestId,
+    required String phone,
+    required String address,
+    required double totalAmount,
+  }) async {
+    try {
+      // ⏳ Loader show karne ke liye (const ko Center ke andar move kiya hai)
+      Get.dialog(
+        const Center(
+          child: CircularProgressIndicator(
+            color: AppColors
+                .DarkPink, // Agar AppColors import na ho raha ho toh isko Colors.pink kar sakti ho
+          ),
+        ),
+        barrierDismissible: false,
+      );
+
+      // 📝 Firestore mein specific request document ko update karna
+      await FirebaseFirestore.instance
+          .collection('requests')
+          .doc(requestId)
+          .update({
+        'phone': phone,
+        'deliveryAddress': address,
+        'totalBill': totalAmount,
+        'detailsSubmitted':
+            true, // 🔥 Profile screen automatically update ho jayegi
+        'orderConfirmedAt': FieldValue.serverTimestamp(),
+      });
+
+      Get.back(); // Loader dialog ko close karne ke liye
+    } catch (e) {
+      Get.back(); // Error ki surat mein bhi loader band ho
+      Get.snackbar(
+        "Error",
+        "Failed to update details: ${e.toString()}",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      rethrow;
+    }
   }
 }

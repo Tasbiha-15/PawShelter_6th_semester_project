@@ -4,6 +4,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 
 import '../../controller/home/home_main_controller.dart';
 import '../../resources/colors/app_colors.dart';
+import '../pawsAI/paws_ai_screen.dart';
 
 
 class MainHomeScreen extends StatelessWidget {
@@ -50,9 +51,14 @@ class MainHomeScreen extends StatelessWidget {
                 text: "Categories",
               ),
               GButton(
+                icon: Icons.auto_awesome,
+                text: "Paws AI",
+              ),
+              GButton(
                 icon: Icons.person_rounded,
                 text: "Profile",
               ),
+              
             ],
           ),
         ),
